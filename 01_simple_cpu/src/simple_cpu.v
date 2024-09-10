@@ -157,7 +157,6 @@ ALU m_ALU(
   .in_a(alu_in1), 
   .in_b(alu_in2), // is input with reg allowed?? 
   .alu_func(alu_func),
-  .funct3(funct3),
 
   // output
   .result(alu_out),
@@ -183,12 +182,12 @@ branch_control m_branch_control(
 // TODO : Currently, NEXT_PC is always PC_PLUS_4. Using adders and muxes & 
 // control signals, compute & assign the correct NEXT_PC.
 //////////////////////////////////////////////////////////////////////////////
-wire[DATA_WIDTH-1:0] addr_imm;
 wire[DATA_WIDTH-1:0] branch_addr;
 wire[DATA_WIDTH-1:0] jump_addr;
 wire[DATA_WIDTH-1:0] jump_adder_in1;
 wire[DATA_WIDTH-1:0] jump_adder_in2;
-assign addr_imm = $signed(sextimm) <<< 1;
+wire chk_branch_not;
+assign chk_branch_not = branch & (funct3[0] ^ taken);
 adder m_branch_addr_adder(
   .in_a(PC),
   .in_b(sextimm),
@@ -202,21 +201,14 @@ mux_2x1 m_jump_in1_mux(
 
   .out(jump_adder_in1)
 );
-mux_2x1 m_jump_in2_mux(
-  .select(jump[0]),
-  .in1(sextimm),
-  .in2(addr_imm),
-
-  .out(jump_adder_in2)
-);
 adder m_jump_addr_adder(
   .in_a(jump_adder_in1),
-  .in_b(jump_adder_in2),
+  .in_b(sextimm),
 
   .result(jump_addr)
 );
 mux_4x1 m_next_pc_mux(
-  .select({taken,jump[1]}),
+  .select({chk_branch_not,jump[1]}),
   .in1(PC_PLUS_4),
   .in2(jump_addr),
   .in3(branch_addr),

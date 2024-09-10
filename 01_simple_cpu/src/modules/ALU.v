@@ -12,7 +12,6 @@ module ALU
   input [DATA_WIDTH-1:0] in_a, 
   input [DATA_WIDTH-1:0] in_b,
   input [3:0] alu_func,
-  input [2:0] funct3,
 
   output reg [DATA_WIDTH-1:0] result,
   output reg check 
@@ -36,7 +35,9 @@ always @(*) begin
     `OP_SRL: result = in_a >>> in_b;
     `OP_SRA: result = $signed(in_a) >>> $signed(in_b);
     `OP_SLT: result = ($signed(in_a) < $signed(in_b))? 32'h0000_0001:32'h0000_0000;
-    `OP_SLTU: result = (in_a < in_b)?32'h0000_0001:32'h0000_0000;
+    `OP_SLTU: result = (in_a < in_b)? 32'h0000_0001:32'h0000_0000;
+    `OP_BGE: result = ($signed(in_a) < $signed(in_b))? 32'h0000_0001:32'h0000_0000;
+    `OP_BGEU: result = (in_a < in_b)? 32'h0000_0001:32'h0000_0000;
     default:  result = 32'h0000_0000;
   endcase
 end
@@ -46,14 +47,9 @@ always @(*) begin
     //////////////////////////////////////////////////////////////////////////
     // TODO : Generate check signal
     //////////////////////////////////////////////////////////////////////////
-    `OP_SUB: begin
-      casex (funct3) 
-        3'b000: check = (result == 0)? 1'b1:1'b0; //beq
-        3'b001: check = (result == 0)? 1'b0:1'b1; //bne
-        3'b1x0: check = (result[DATA_WIDTH-1]==1'b1)? 1'b1:1'b0; //blt
-        3'b1x1: check = (result[DATA_WIDTH-1]==1'b1)? 1'b0:1'b1; //bge
-      endcase
-    end
+    `OP_SUB: check = (result == 0)? 1'b1:1'b0;
+    `OP_BGE: check = result[0];
+    `OP_BGEU: check = result[0];
     default:  check = 1'b0;
   endcase
 end

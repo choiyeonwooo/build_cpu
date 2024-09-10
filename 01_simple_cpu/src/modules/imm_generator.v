@@ -37,7 +37,7 @@ always @(*) begin
       else sextimm ={{19{instruction[31]}},instruction[31],instruction[7],instruction[30:25],instruction[11:8],1'b0}; 
     end
     //jump&link
-    7'b1101111: sextimm = {instruction[31],instruction[19:12],instruction[20],instruction[30:21]};
+    7'b1101111: sextimm = {{11{instruction[31]}},instruction[31],instruction[19:12],instruction[20],instruction[30:21],1'b0};
     //jump&link reg
     7'b1100111: begin
       if (funct3[2:1]==2'b11) sextimm = {{20{1'b0}}, instruction[31:20]};

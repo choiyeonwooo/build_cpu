@@ -14,9 +14,6 @@ tests = [
           [ 'task5/1', 'data/task5/1/inst_disassembled.mem', 'data/task5/1/reg-in.mem', 'data/task5/1/reg-out.mem' ],
           [ 'fibonacci', 'data/fib/inst_disassembled.mem', 'data/fib/reg-in.mem', 'data/fib/reg-out.mem' ]
         ]
-tests = [
-          [ 'fibonacci', 'data/fib/inst_disassembled.mem', 'data/fib/reg-in.mem', 'data/fib/reg-out.mem' ]
-]
 def get_ans_reg(path_to_reg):
     cwd = os.getcwd()
     reg_f = open(os.path.join(cwd, path_to_reg), "r")
@@ -74,7 +71,7 @@ def main():
             print("test failed")
             print("-------------------------------")
 
-        #os.system("rm ./data/stat.out")
+        os.system("rm ./data/stat.out")
 
 
 if __name__ == '__main__':
